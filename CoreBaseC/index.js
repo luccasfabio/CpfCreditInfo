@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const { MovimentacaoNoCPF } = require('./app/models');
+const redis = require('redis');
+const cache = redis.createClient();
 
 app.use(express.urlencoded({ extended: false }));
 
