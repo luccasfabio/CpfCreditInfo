@@ -1,8 +1,7 @@
 const express = require('express');
 const app = express();
 const { MovimentacaoNoCPF } = require('./app/models');
-const redis = require('redis');
-const cache = redis.createClient();
+const cache = require('./app/cache');
 
 app.use(express.urlencoded({ extended: false }));
 
@@ -10,14 +9,19 @@ app.use(express.urlencoded({ extended: false }));
 app.get('/C/ultimaConsulta/', async (req, res) => {
 
   const { cpfReq } = req.query;
-  const {cpf, ultimaConsultaEmBureau} = await MovimentacaoNoCPF.findOne({ where: { cpf: cpfReq } });
+  const { cpf, ultimaConsultaEmBureau } = await MovimentacaoNoCPF.findOne({ where: { cpf: cpfReq } });
+
 
   if (cpf === null) {
     res.json('CPF não encontrado')
+  } else if (cache.get(cpf, (err, ultimaConsultaEmBureau) => {
+    return ultimaConsultaEmBureau;
+  }) !== null) {
+    res.json({ultimaConsultaEmBureau})
   } else {
-    res.json({
-      ultimaConsultaEmBureau
-    });
+    cache.set(cpf, ultimaConsultaEmBureau, () => {
+      res.json({ultimaConsultaEmBureau});
+    })
   }
 });
 
@@ -26,7 +30,7 @@ app.get('/C/movimentacaoFinanceira/', async (req, res) => {
 
   const { cpfReq } = req.query;
 
-  const {cpf, ultimaCompraNoCredito, valorUltimaCompraNoCredito, quantidadeParcelasUltimaCompraNoCredito } = await MovimentacaoNoCPF.findOne({ where: { cpf: cpfReq } });
+  const { cpf, ultimaCompraNoCredito, valorUltimaCompraNoCredito, quantidadeParcelasUltimaCompraNoCredito } = await MovimentacaoNoCPF.findOne({ where: { cpf: cpfReq } });
 
   if (cpf === null) {
     res.json('CPF não encontrado');
