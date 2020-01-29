@@ -1,29 +1,29 @@
 const express = require('express');
 const app = express();
-const { MovimentacaoNoCPF } = require('./app/models');
+const { CpfCreditCardInfo } = require('./app/models');
 const cache = require('./app/cache.js');
 
 app.use(express.urlencoded({ extended: false }));
 
-//Retorna ultima consulta em um Bureau de crédito
-app.get('/C/ultimaConsulta/', async (req, res) => {
+//Returns the last time this cpf was queried in a credit bureau
+app.get('/C/lastBureauQuery/', async (req, res) => {
 
   try {
     const { cpf } = req.query;
-    const movimentacaoNoCPF = await MovimentacaoNoCPF.findOne({
+    const cpfCreditCardInfo = await CpfCreditCardInfo.findOne({
       where: { cpf: cpf },
-      fields: ['ultimaConsultaEmBureau']
+      fields: ['lastBureauQuery']
     });
 
-    if (!movimentacaoNoCPF) {
-      res.json('CPF não encontrado')
-    } else if (cache.get(cpf, (err, ultimaConsultaEmBureau) => {
-      return movimentacaoNoCPF;
+    if (!cpfCreditCardInfo) {
+      res.json('CPF not found')
+    } else if (cache.get(cpf, (err, lastBureauQuery) => {
+      return cpfCreditCardInfo;
     }) !== null) {
-      res.json(movimentacaoNoCPF)
+      res.json(cpfCreditCardInfo)
     } else {
-      cache.set(movimentacaoNoCPF, () => {
-        res.json(movimentacaoNoCPF);
+      cache.set(cpfCreditCardInfo, () => {
+        res.json(cpfCreditCardInfo);
       })
     }
   } catch (err) {
@@ -31,21 +31,27 @@ app.get('/C/ultimaConsulta/', async (req, res) => {
   }
 });
 
-//Retorna Movimentação financeira
-app.get('/C/movimentacaoFinanceira/', async (req, res) => {
+//Returns recent credit card movement
+app.get('/C/financialMovement/', async (req, res) => {
 
   try {
 
     const { cpf } = req.query;
-    const movimentacaoNoCPF = await MovimentacaoNoCPF.findOne({
+    const cpfCreditCardInfo = await CpfCreditCardInfo.findOne({
       where: { cpf: cpf },
-      attributes: ['ultimaCompraNoCredito', 'valorUltimaCompraNoCredito', 'quantidadeParcelasUltimaCompraNoCredito']
+      attributes: ['lastCreditCardPurchase', 'lastCreditCardPurchaseValue', 'lastCreditCardPurchaseQuotas']
     });
 
-    if (!movimentacaoNoCPF) {
-      res.json('CPF não encontrado');
+    if (!cpfCreditCardInfo) {
+      res.json('CPF not found')
+    } else if (cache.get(cpf, (err, lastBureauQuery) => {
+      return cpfCreditCardInfo;
+    }) !== null) {
+      res.json(cpfCreditCardInfo)
     } else {
-      res.json({ movimentacaoNoCPF });
+      cache.set(cpfCreditCardInfo, () => {
+        res.json(cpfCreditCardInfo);
+      })
     }
   } catch (err) {
     res.json(err)

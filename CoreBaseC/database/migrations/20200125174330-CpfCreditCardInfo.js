@@ -1,6 +1,6 @@
 module.exports = {
   up: (queryInterface, DataTypes) => {
-    return queryInterface.createTable('MovimentacaoNoCPF', {
+    return queryInterface.createTable('CpfCreditCardInfo', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -11,23 +11,23 @@ module.exports = {
         allowNull: false,
         type: DataTypes.STRING,
       },
-      ultimaConsultaEmBureau: { 
+      lastBureauQuery: { 
         allowNull: true,
         type: DataTypes.DATE
       },
-      ultimaCompraNoCredito: {
+      lastCreditCardPurchase: {
         allowNull: true,
         type: DataTypes.DATE
       },
-      valorUltimaCompraNoCredito: {
+      lastCreditCardPurchaseValue: {
         allowNull: true,
         type: DataTypes.DOUBLE,
       },
-      quantidadeParcelasUltimaCompraNoCredito: {
+      lastCreditCardPurchaseQuotas: {
         allowNull: true,
         type: DataTypes.INTEGER,
       },
-      atualizadoEm: {
+      updatedAt: {
         allowNull: false,
         type: DataTypes.DATE,
       },
@@ -35,6 +35,6 @@ module.exports = {
   },
 
   down: (queryInterface) => {
-    return queryInterface.dropTable('MovimentacaoNoCPF');
+    return queryInterface.dropTable('CpfCreditCardInfo');
   }
 };
