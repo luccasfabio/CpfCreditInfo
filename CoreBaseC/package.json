@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
+    "jest": "^25.1.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.1.0",
     "redis": "^2.8.0",
@@ -12,5 +13,8 @@
   },
   "devDependencies": {
     "sequelize-cli": "^5.5.1"
+  },
+  "scripts": {
+    "test": "jest"
   }
 }
