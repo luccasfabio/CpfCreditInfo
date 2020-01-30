@@ -9,6 +9,7 @@ module.exports = {
 
     try {
       const { cpf } = req.query;
+
       let cpfCreditCardInfo = null;
 
       //tries to retrieve data from redis cache
