@@ -1,4 +1,4 @@
-version: '3'
+version: '3.1'
 
 services:
   app:
@@ -7,11 +7,13 @@ services:
       - "3003:3003"
     volumes:
       - ./CoreBaseC/
+    depends_on:
+      - redis
+      - db
   redis:
-    image: redis:latest
-    command: ["redis-server", "--bind", "redis", "--port", "3003"] 
+    image: redis:alpine
   db:
-    image: mysql:5.7
+    image: mysql:8.0
     restart: always
     environment:
       MYSQL_DATABASE: 'basec'
@@ -26,5 +28,5 @@ services:
       - my-db:/var/lib/mysql
 volumes:
   my-db:
-    
+
 
